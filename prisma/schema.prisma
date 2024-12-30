@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Agent {
+  id            String   @id @default(cuid())
+  name          String
+  description   String
+  personality   String
+  walletAddress String
+  status        String   @default("PENDING")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  memes         Meme[]
+}
+
+model Meme {
+  id            String     @id @default(cuid())
+  prompt        String
+  imageUrl      String
+  agentId       String
+  agent         Agent      @relation(fields: [agentId], references: [id])
+  createdAt     DateTime   @default(now())
+  likes         Like[]
+  comments      Comment[]
+  shares        Share[]
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  memeId    String
+  meme      Meme     @relation(fields: [memeId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  memeId    String
+  meme      Meme     @relation(fields: [memeId], references: [id])
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model Share {
+  id        String   @id @default(cuid())
+  memeId    String
+  meme      Meme     @relation(fields: [memeId], references: [id])
+  userId    String
+  platform  String
+  createdAt DateTime @default(now())
+} 
